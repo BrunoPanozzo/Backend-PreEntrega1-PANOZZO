@@ -6,7 +6,9 @@
         "code": "Moviles1",
         "thumbnail": "celular s23.png",
         "price": 779.999,
-        "stock": 10  
+        "stock": 10,
+        "status": true,
+        "category": "Moviles"
     },
     {
         "id": 2,
@@ -15,7 +17,9 @@
         "code": "Moviles2",
         "thumbnail": "celular s22.png",
         "price": 459.999,
-        "stock": 15  
+        "stock": 15,
+        "status": true,
+        "category": "Moviles"   
     },
     {
         "id": 3,
@@ -24,7 +28,9 @@
         "code": "Moviles3",
         "thumbnail": "smartwatch5.png",
         "price": 174.999,
-        "stock": 20 
+        "stock": 20,
+        "status": true,
+        "category": "Moviles" 
     },
     {
         "id": 4,
@@ -33,7 +39,9 @@
         "code": "Moviles4",
         "thumbnail": "smartwatch4.png",
         "price": 214.999,
-        "stock": 25 
+        "stock": 25,
+        "status": true,
+        "category": "Moviles" 
     },
     {
         "id": 5,
@@ -42,7 +50,9 @@
         "code": "TV-Audio1",
         "thumbnail": "tv crystal 65.png",
         "price": 474.999,
-        "stock": 10 
+        "stock": 10,
+        "status": true,
+        "category": "TV-Audio"  
     },
     {
         "id": 6,
@@ -51,7 +61,9 @@
         "code": "TV-Audio2",
         "thumbnail": "tv Neo 55.png",
         "price": 809.999,
-        "stock": 15 
+        "stock": 15,
+        "status": true,
+        "category": "TV-Audio"  
     },
     {
         "id": 7,
@@ -60,7 +72,9 @@
         "code": "TV-Audio3",
         "thumbnail": "sound tower 1500W.png",
         "price": 399.999,
-        "stock": 20
+        "stock": 20,
+        "status": true,
+        "category": "TV-Audio" 
     },
     {
         "id": 8,
@@ -69,7 +83,9 @@
         "code": "TV-Audio4",
         "thumbnail": "barra de sonido.png",
         "price": 725.170,
-        "stock": 25 
+        "stock": 25,
+        "status": true,
+        "category": "TV-Audio"  
     },
     {
         "id": 9,
@@ -78,7 +94,9 @@
         "code": "Electrodomesticos1",
         "thumbnail": "horno electrico.png",
         "price": 238.499,
-        "stock": 10 
+        "stock": 10,
+        "status": true,
+        "category": "Electrodomesticos" 
     },
     {
         "id": 10,
@@ -87,7 +105,9 @@
         "code": "Electrodomesticos2",
         "thumbnail": "heladera.png",
         "price": 745.999,
-        "stock": 15 
+        "stock": 15,
+        "status": true,
+        "category": "Electrodomesticos"  
     },
     {
         "id": 11,
@@ -96,7 +116,9 @@
         "code": "Electrodomesticos3",
         "thumbnail": "lavarropa.png",
         "price": 375.999,
-        "stock": 20 
+        "stock": 20,
+        "status": true,
+        "category": "Electrodomesticos"   
     },
     {
         "id": 12,
@@ -105,7 +127,9 @@
         "code": "Electrodomesticos4",
         "thumbnail": "split.png",
         "price": 397.999,
-        "stock": 25
+        "stock": 25,
+        "status": true,
+        "category": "Electrodomesticos" 
     },
     {
         "id": 13,
@@ -114,7 +138,9 @@
         "code": "Computacion1",
         "thumbnail": "book3.png",
         "price": 699.999,
-        "stock": 10 
+        "stock": 10,
+        "status": true,
+        "category": "Computacion"  
     },    
     {
         "id": 14,
@@ -123,7 +149,9 @@
         "code": "Computacion2",
         "thumbnail": "book3 pro.png",
         "price": 1.094999,
-        "stock": 15 
+        "stock": 15,
+        "status": true,
+        "category": "Computacion"   
     },
     {
         "id": 15,
@@ -132,7 +160,9 @@
         "code": "Computacion3",
         "thumbnail": "monitor g4.png",
         "price": 237.499,
-        "stock": 20
+        "stock": 20,
+        "status": true,
+        "category": "Computacion"  
     },
     {
         "id": 16,
@@ -141,6 +171,8 @@
         "code": "Computacion4",
         "thumbnail": "monitor g5.png",
         "price": 368.688,
-        "stock": 25  
+        "stock": 25,
+        "status": true,
+        "category": "Computacion"   
     }
 ]
