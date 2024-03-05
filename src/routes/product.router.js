@@ -1,8 +1,7 @@
 const { Router } = require('express')
+const ProductManager = require('../ProductManager')
 
 const router = Router()
-
-const ProductManager = require('../ProductManager')
 
 const fileName = `${__dirname}/../../products.json`
 const productManager = new ProductManager(fileName)
@@ -14,9 +13,20 @@ function validarCampos(req, res, next) {
 
     const product = req.body
 
-    console.log(req.body)
+    if (productManager.validFields(product.title,
+                                   product.description,
+                                   product.price,                                  
+                                   product.thumbnail,
+                                   product.code,
+                                   product.stock,
+                                   product.status,
+                                   product.category)) {
+        console.log(product)
 
-    next()
+        return next()
+    }
+    // HTTP 400 => los campos de l producto que se quiere agregar no son válidos
+    res.status(400).json({ error: "El producto posee algún campo inválido" })
 }
 
 //endpoints
@@ -34,13 +44,13 @@ router.get('/', async (req, res) => {
             res.status(400).json({ error: "Formato inválido del límite" })
             return
         }
-    
-        filteredProducts = products.splice(0, limit)        
+
+        filteredProducts = products.splice(0, limit)
     }
     else {
         filteredProducts = products
-    }       
-        
+    }
+
     // HTTP 200 OK
     res.status(200).json(filteredProducts)
 })
@@ -61,10 +71,10 @@ router.get('/:pid', (req, res) => {
         res.status(200).json(product)
     else
         // HTTP 404 => el ID es válido, pero no se encontró ese producto
-        res.status(404).json(`El producto con código \"${prodId}\" no existe`)
+        res.status(404).json(`El producto con código '${prodId}' no existe`)
 })
 
-router.post('/',  validarCampos, (req, res) => {
+router.post('/', validarCampos, (req, res) => {
     console.log('pase por el post')
     res.status(200).json()
 })

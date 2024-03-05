@@ -60,8 +60,10 @@ class ProductManager {
         await fs.promises.writeFile(this.path, fileProductsContent)
     }
 
+    //métodos públicos
+
     //validar los campos de un "objeto" producto
-    #validFields(title, description, price, thumbnail, code, stock) {
+    validFields = (title, description, price, thumbnail, code, stock, status, category) => {
         //validar que el campo "title" no esté vacío        
         if (title.trim().length <= 0) {
             console.error("El campo \"title\" es inválido")
@@ -77,9 +79,30 @@ class ProductManager {
             console.error("El campo \"price\" no es un número")
             return false
         }
-        //validar que el campo "thumbnail" no esté vacío
-        if (thumbnail.trim().length <= 0) {
-            console.error("El campo \"thumbnail\" es inválido")
+        //el campo "thumbnail" puede estar vacío, por eso queda comentado la validacion anterior, solo
+        //verificar que es un arreglo de strings
+        // if (thumbnail.trim().length <= 0) {
+        //     console.error("El campo \"thumbnail\" es inválido")
+        //     return false
+        // 
+        if (!Array.isArray(thumbnail)) {
+            return false
+        }
+        else {
+            thumbnail.every(rutaImg => {
+                if (typeof rutaImg != "string")
+                    return false;
+                return true
+            })
+        }
+        //validar que el campo "status" sea booleano
+        if (typeof status != "boolean") {
+            console.error("El campo \"status\" no es booleano")
+            return false
+        }
+        //validar que el campo "category"  no esté vacío
+        if (category.trim().length <= 0) {
+            console.error("El campo \"category\" es inválido")
             return false
         }
         //validar que el campo "code" contenga sólo números y letras
@@ -96,7 +119,7 @@ class ProductManager {
         return true
     }
 
-    //métodos públicos
+
     //devolver todo el arreglo de productos leidos a partir de un archivo de productos
     getProducts = async () => {
         try {
@@ -115,14 +138,14 @@ class ProductManager {
         if (producto)
             return producto
         else {
-            console.error(`El producto con código \"${prodId}\" no existe`)
+            console.error(`El producto con código "${prodId}" no existe`)
             return
         }
     }
 
     //agregar, si sus campos de datos son válidos, un producto al arreglo de productos inicial y al archivo correspondiente
     addProduct = async (title, description, price, thumbnail, code, stock) => {
-        if (this.#validFields(title, description, price, thumbnail, code, stock)) {
+        if (this.validFields(title, description, price, thumbnail, code, stock)) {
             //antes de agregar el producto, verificar que el campo "code" no se repita
             const producto = this.#products.find(item => item.code === code)
             if (producto) {
@@ -149,7 +172,7 @@ class ProductManager {
 
     //actualizar, si sus campos modificados son válidos, un producto en el arreglo de productos inicial y en el archivo correspondiente
     updateProduct = async (product) => {
-        if (this.#validFields(product.title, product.description, product.price, product.thumbnail, product.code, product.stock)) {
+        if (this.validFields(product.title, product.description, product.price, product.thumbnail, product.code, product.stock)) {
             //antes de actualizar el producto, verificar que el campo "code" que puede venir modificado no sea igual a otros productos ya existentes
             const producto = this.#products.find(item => ((item.code === product.code) && (item.id != product.id)))
             if (producto) {
@@ -185,7 +208,7 @@ class ProductManager {
     }
 }
 
-module.exports = ProductManager 
+module.exports = ProductManager
 
 // //testing de la clase "ProductManager"
 // testing = async () => {
@@ -226,7 +249,7 @@ module.exports = ProductManager
 //     console.log(products4)
 
 //     let productA = productManager.getProductById(1)
-//     if (productA) 
+//     if (productA)
 //         console.log(productA)
 
 //     let productB = productManager.getProductById(1)
