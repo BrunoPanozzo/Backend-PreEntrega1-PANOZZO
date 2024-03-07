@@ -43,6 +43,11 @@ class ProductManager {
         return (/^[0-9]+$/.test(cadena))
     }
 
+    //validar permitiendo solo números positivos
+    #soloNumerosPositivos = (cadena) => {
+        return (this.#soloNumeros(cadena) && (+cadena > 0))
+    }
+
     //leer el archivo de productos e inicializar el array de objetos
     async #readProductsFromFile() {
         try {
@@ -75,8 +80,8 @@ class ProductManager {
             return false
         }
         //validar que el campo "price" contenga sólo números
-        if ((!this.#soloNumeros(price)) || (typeof price != "number")) {
-            console.error("El campo \"price\" no es un número")
+        if ((!this.#soloNumerosPositivos(price)) || (typeof price != "number")) {
+            console.error("El campo \"price\" no es un número positivo")
             return false
         }
         //el campo "thumbnail" puede estar vacío, por eso queda comentado la validacion anterior, solo
@@ -89,11 +94,12 @@ class ProductManager {
             return false
         }
         else {
-            thumbnail.every(rutaImg => {
-                if (typeof rutaImg != "string")
-                    return false;
-                return true
-            })
+            let pos = -1
+            do {
+                pos++
+            } while ((pos < thumbnail.length) && (typeof thumbnail[pos] == "string"));
+            if (pos != thumbnail.length)
+                return false
         }
         //validar que el campo "status" sea booleano
         if (typeof status != "boolean") {
@@ -144,54 +150,54 @@ class ProductManager {
     }
 
     //agregar, si sus campos de datos son válidos, un producto al arreglo de productos inicial y al archivo correspondiente
-    addProduct = async (title, description, price, thumbnail, code, stock) => {
-        if (this.validFields(title, description, price, thumbnail, code, stock)) {
-            //antes de agregar el producto, verificar que el campo "code" no se repita
-            const producto = this.#products.find(item => item.code === code)
-            if (producto) {
-                console.error(`No se permite agregar el producto con código \"${code}\" porque ya existe`)
-                return
-            }
+    addProduct = async (title, description, price, thumbnail, code, stock, status, category) => {
+        // if (this.validFields(title, description, price, thumbnail, code, stock)) {
+        //     //antes de agregar el producto, verificar que el campo "code" no se repita
+        //     const producto = this.#products.find(item => item.code === code)
+        //     if (producto) {
+        //         console.error(`No se permite agregar el producto con código \"${code}\" porque ya existe`)
+        //         return
+        //     }
 
-            //si llego a este punto, ya están validados los datos, puedo construir el objeto "producto"
-            const product = {
-                id: this.#getNuevoID(),
-                title,
-                description,
-                price: Number(price),
-                thumbnail,
-                code,
-                stock: Number(stock)
-            }
-
-            this.#products.push(product)
-
-            await this.#updateProductsFile()
+        //si llego a este punto, ya están validados los datos, puedo construir el objeto "producto"
+        const product = {
+            id: this.#getNuevoID(),
+            title,
+            description,
+            price: Number(price),
+            thumbnail,
+            code,
+            stock: Number(stock)
         }
+
+        this.#products.push(product)
+
+        await this.#updateProductsFile()
     }
 
     //actualizar, si sus campos modificados son válidos, un producto en el arreglo de productos inicial y en el archivo correspondiente
-    updateProduct = async (product) => {
-        if (this.validFields(product.title, product.description, product.price, product.thumbnail, product.code, product.stock)) {
-            //antes de actualizar el producto, verificar que el campo "code" que puede venir modificado no sea igual a otros productos ya existentes
-            const producto = this.#products.find(item => ((item.code === product.code) && (item.id != product.id)))
-            if (producto) {
-                console.error(`No se permite modificar el producto con código \"${product.code}\" porque ya existe`)
-                return
-            }
+    updateProduct = async (product, prodId) => {
+        // if (this.validFields(product.title, product.description, product.price, product.thumbnail, product.code, product.stock)) {
+        //     //antes de actualizar el producto, verificar que el campo "code" que puede venir modificado no sea igual a otros productos ya existentes
+        //     const producto = this.#products.find(item => ((item.code === product.code) && (item.id != product.id)))
+        //     if (producto) {
+        //         console.error(`No se permite modificar el producto con código \"${product.code}\" porque ya existe`)
+        //         return
+        //     }
 
-            const existingProductIdx = this.#products.findIndex(item => item.id === product.id)
+        //     const existingProductIdx = this.#products.findIndex(item => item.id === product.id)
 
-            if (existingProductIdx < 0) {
-                throw 'Producto Inválido!'
-            }
+        //     if (existingProductIdx < 0) {
+        //         throw 'Producto Inválido!'
+        //     }
 
-            // actualizar los datos de ese producto en el array
-            const productData = { ...this.#products[existingProductIdx], ...product }
-            this.#products[existingProductIdx] = productData
+        const existingProductIdx = this.#products.findIndex(item => item.id === product.id)
+       
+        // actualizar los datos de ese producto en el array
+        const productData = { ...this.#products[existingProductIdx], ...product, id: prodId }
+        this.#products[existingProductIdx] = productData
 
-            await this.#updateProductsFile()
-        }
+        await this.#updateProductsFile()
     }
 
     //dado un ID de producto, eliminar el mismo del arreglo de productos y del archivo correspondiente. Caso contrario devolver msje de error
@@ -210,64 +216,3 @@ class ProductManager {
 
 module.exports = ProductManager
 
-// //testing de la clase "ProductManager"
-// testing = async () => {
-//     const productManager = new ProductManager('./products.json')
-
-//     await productManager.inicializar()
-//     let products = await productManager.getProducts()
-//     console.log(products)
-
-//     await productManager.addProduct("producto prueba A",
-//         "Este es un producto prueba",
-//         200,
-//         "sin imagen",
-//         "abc123",
-//         25)
-
-//     let products2 = await productManager.getProducts()
-//     console.log(products2)
-
-//     await productManager.addProduct("producto prueba B",
-//         "Este es un producto prueba",
-//         200,
-//         "sin imagen",
-//         "abc1234",
-//         25)
-
-//     let products3 = await productManager.getProducts()
-//     console.log(products3)
-
-//     await productManager.addProduct("producto prueba C",
-//         "Este es un producto prueba",
-//         200,
-//         "sin imagen",
-//         "abc1234",
-//         25)
-
-//     let products4 = await productManager.getProducts()
-//     console.log(products4)
-
-//     let productA = productManager.getProductById(1)
-//     if (productA)
-//         console.log(productA)
-
-//     let productB = productManager.getProductById(1)
-//     if (productB) {
-//         console.log(productB)
-
-//         await productManager.updateProduct({ ...productB, stock: 50, price: 300 })
-//         let products4 = await productManager.getProducts()
-//         console.log(products4)
-//     }
-
-//     await productManager.deleteProduct(2)
-//     let products5 = await productManager.getProducts()
-//     console.log(products5)
-
-//     await productManager.deleteProduct(3)
-//     let products6 = await productManager.getProducts()
-//     console.log(products6)
-// }
-
-// testing()
