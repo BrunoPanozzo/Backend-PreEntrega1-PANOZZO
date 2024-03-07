@@ -14,7 +14,6 @@ class ProductManager {
     inicializar = async () => {
         this.#products = await this.getProducts()
         ProductManager.#lastID_Product = this.#getHigherID()
-        // console.log('Inicio ID de productos en ' + ProductManager.#lastID_Product)
     }
 
     //métodos internos
@@ -38,14 +37,14 @@ class ProductManager {
         return (/^[a-zA-Z0-9]+$/.test(cadena))
     }
 
-    //validar permitiendo solo números
-    #soloNumeros = (cadena) => {
-        return (/^[0-9]+$/.test(cadena))
-    }
-
     //validar permitiendo solo números positivos
     #soloNumerosPositivos = (cadena) => {
-        return (this.#soloNumeros(cadena) && (+cadena > 0))
+        return ((/^[0-9]+$/.test(cadena)) && (+cadena > 0))
+    }
+
+    //validar permitiendo solo números positivos, más el cero
+    #soloNumerosPositivos_Y_Cero = (cadena) => {
+        return ((/^[0-9]+$/.test(cadena)) && (+cadena >= 0))
     }
 
     //leer el archivo de productos e inicializar el array de objetos
@@ -67,8 +66,13 @@ class ProductManager {
 
     //métodos públicos
 
+    //validar que un numero sea estrictamente positivo, incluido el 0
+    esPositivo = (cadena) => {
+        return this.#soloNumerosPositivos_Y_Cero(cadena)
+    }
+
     //validar los campos de un "objeto" producto
-    validFields = (title, description, price, thumbnail, code, stock, status, category) => {
+    validateProduct = (title, description, price, thumbnail, code, stock, status, category) => {
         //validar que el campo "title" no esté vacío        
         if (title.trim().length <= 0) {
             console.error("El campo \"title\" es inválido")
@@ -118,13 +122,12 @@ class ProductManager {
             return false
         }
         //validar que el campo "stock" contenga sólo números
-        if ((!this.#soloNumeros(stock)) || (typeof stock != "number")) {
+        if ((!this.#soloNumerosPositivos_Y_Cero(stock)) || (typeof stock != "number")) {
             console.error("El campo \"stock\" no es un número")
             return false
         }
         return true
     }
-
 
     //devolver todo el arreglo de productos leidos a partir de un archivo de productos
     getProducts = async () => {
@@ -144,7 +147,7 @@ class ProductManager {
         if (producto)
             return producto
         else {
-            console.error(`El producto con código "${prodId}" no existe`)
+            console.error(`El producto con código "${prodId}" no existe.`)
             return
         }
     }
@@ -167,7 +170,9 @@ class ProductManager {
             price: Number(price),
             thumbnail,
             code,
-            stock: Number(stock)
+            stock: Number(stock),
+            status,
+            category
         }
 
         this.#products.push(product)
@@ -191,7 +196,7 @@ class ProductManager {
         //         throw 'Producto Inválido!'
         //     }
 
-        const existingProductIdx = this.#products.findIndex(item => item.id === product.id)
+        const existingProductIdx = this.#products.findIndex(item => item.id === prodId)
        
         // actualizar los datos de ese producto en el array
         const productData = { ...this.#products[existingProductIdx], ...product, id: prodId }

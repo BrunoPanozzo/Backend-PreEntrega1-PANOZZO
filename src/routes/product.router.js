@@ -8,67 +8,71 @@ const productManager = new ProductManager(fileName)
 
 //middlewares
 
-async function validarCamposNuevos(req, res, next) {
+async function validateNewProduct(req, res, next) {
     const product = req.body
 
-    if (productManager.validFields(product.title,
-        product.description,
-        product.price,
-        product.thumbnail,
-        product.code,
-        product.stock,
-        product.status,
-        product.category)) {
+    if (productManager.validateProduct(product.title,
+                                       product.description,
+                                       product.price,
+                                       product.thumbnail,
+                                       product.code,
+                                       product.stock,
+                                       product.status,
+                                       product.category)) {
         //debo verificar también que el campo "code" no se repita
-        let products = await productManager.getProducts()
-        const producto = products.find(item => item.code === product.code)
+        let allProducts = await productManager.getProducts()
+        const producto = allProducts.find(element => element.code === product.code)
         if (producto) {
-            let msjeError = `No se permite agregar el producto con código '${product.code}' porque ya existe`
+            let msjeError = `No se permite agregar el producto con código '${product.code}' porque ya existe.`
             console.error(msjeError)
-            // HTTP 400 =>
+            // HTTP 400 => code repetido
             res.status(400).json({ error: msjeError })
             return
         }
+        //exito, continuo al endpoint
         return next()
     }
-    // HTTP 400 => los campos de l producto que se quiere agregar no son válidos
-    res.status(400).json({ error: "El producto que se quiere agregar posee algún campo inválido" })
+    // HTTP 400 => producto con valores inválidos
+    res.status(400).json({ error: "El producto que se quiere agregar posee algún campo inválido." })
 }
 
 
-async function validarCamposModificados(req, res, next) {
+async function validateUpdateProduct(req, res, next) {
+    const prodId = +req.params.pid
     const product = req.body
 
-    if (productManager.validFields(product.title,
-        product.description,
-        product.price,
-        product.thumbnail,
-        product.code,
-        product.stock,
-        product.status,
-        product.category)) {
+    //primero debo verificar que el producto exista en mi array de todos los productos
+    let allProducts = await productManager.getProducts()
+    const existingProductIdx = allProducts.findIndex(element => element.id === prodId)
+    if (existingProductIdx < 0) {
+        // HTTP 404 => no existe el producto
+        res.status(404).json({ error: `El producto con ID '${prodId}' no se puede modificar porque no existe.`})
+        return
+    }
 
-        //antes de actualizar el producto, verificar que el campo "code" que puede venir modificado no sea igual a otros productos ya existentes
-        let products = await productManager.getProducts()
-        let prod = products.find(item => ((item.code === product.code) && (item.id != product.id)))
-        if (prod) {
-            let msjeError = `No se permite modificar el producto con código '${prod.code}' porque ya existe`
+    if (productManager.validateProduct(product.title,
+                                       product.description,
+                                       product.price,
+                                       product.thumbnail,
+                                       product.code,
+                                       product.stock,
+                                       product.status,
+                                       product.category)) {
+        //verifico que el campo "code", que puede venir modificado, no sea igual al campo code de otros productos ya existentes
+        let producto = allProducts.find(element => ((element.code === product.code) && (element.id != prodId)))
+        if (producto) {
+            let msjeError = `No se permite modificar el producto con código '${product.code}' porque ya existe.`
             console.error(msjeError)
-            // HTTP 400 =>
+            // HTTP 400 => code repetido
             res.status(400).json({ error: msjeError })
             return
         }
-        //debo verificar que el producto exista
-        const existingProductIdx = products.findIndex(item => item.id === product.id)
-        if (existingProductIdx < 0) {
-            // HTTP 400 =>
-            res.status(400).json({ error: `El producto con código \"${prod.code}\" no se puede modificar porque no existe` })
-            return
-        }
+        
+        //exito, continuo al endpoint
         return next()
     }
-    // HTTP 400 => los campos del producto que se quiere modificar no son válidos
-    res.status(400).json({ error: "El producto que se quiere modificar posee algún campo inválido" })
+    // HTTP 400 => producto con valores inválidos
+    res.status(400).json({ error: "El producto que se quiere modificar posee algún campo inválido." })
 }
 
 //endpoints
@@ -76,21 +80,21 @@ async function validarCamposModificados(req, res, next) {
 router.get('/', async (req, res) => {
     const { limit } = req.query
 
-    let products = await productManager.getProducts()
+    let allProducts = await productManager.getProducts()
 
     let filteredProducts = []
 
     if (limit) {
         if (isNaN(limit) || (limit < 0)) {
             // HTTP 400 => hay un error en el request o alguno de sus parámetros
-            res.status(400).json({ error: "Formato inválido del límite" })
+            res.status(400).json({ error: "Formato inválido del límite." })
             return
         }
 
-        filteredProducts = products.splice(0, limit)
+        filteredProducts = allProducts.splice(0, limit)
     }
     else {
-        filteredProducts = products
+        filteredProducts = allProducts
     }
 
     // HTTP 200 OK
@@ -102,7 +106,7 @@ router.get('/:pid', (req, res) => {
 
     if (isNaN(prodId)) {
         // HTTP 400 => hay un error en el request o alguno de sus parámetros
-        res.status(400).json({ error: "Formato inválido del productID" })
+        res.status(400).json({ error: "Formato inválido del productID." })
         return
     }
 
@@ -116,31 +120,30 @@ router.get('/:pid', (req, res) => {
         res.status(404).json(`El producto con código '${prodId}' no existe.`)
 })
 
-router.post('/', validarCampos, async (req, res) => {
+router.post('/', validateNewProduct, async (req, res) => {
     const product = req.body
 
     await productManager.addProduct(product.title,
-        product.description,
-        product.price,
-        product.thumbnail,
-        product.code,
-        product.stock,
-        product.status,
-        product.category)
+                                    product.description,
+                                    product.price,
+                                    product.thumbnail,
+                                    product.code,
+                                    product.stock,
+                                    product.status,
+                                    product.category)
 
     // HTTP 201 OK => producto creado exitosamente
     res.status(201).json(`El producto con código '${product.code}' se agregó exitosamente.`)
 })
 
-
-router.put('/:pid', validarCamposModificados, async (req, res) => {
+router.put('/:pid', validateUpdateProduct, async (req, res) => {
     const prodId = +req.params.pid
     const product = req.body
 
     //valido el ID que hasta el momento no fue evaluado
     if (isNaN(prodId)) {
         // HTTP 400 => hay un error en el request o alguno de sus parámetros
-        res.status(400).json({ error: "Formato inválido del productID" })
+        res.status(400).json({ error: "Formato inválido del productID." })
         return
     }
 
@@ -152,16 +155,17 @@ router.put('/:pid', validarCamposModificados, async (req, res) => {
 
 router.delete('/:pid', async (req, res) => {
     const prodId = +req.params.pid
+
     if (isNaN(prodId)) {
         // HTTP 400 => hay un error en el request o alguno de sus parámetros
-        res.status(400).json({ error: "Formato inválido del productID" })
+        res.status(400).json({ error: "Formato inválido del productID." })
         return
     }
 
     await productManager.deleteProduct(prodId)
 
     // HTTP 200 OK => producto eliminado exitosamente
-    res.status(200).json(prodId)
+    res.status(200).json(`El producto con código '${prodId}' se eliminó exitosamente.`)
 })
 
 const main = async () => {
