@@ -136,7 +136,7 @@ class ProductManager {
             return this.#products
         }
         catch (err) {
-            console.log('El archivo no existe')
+            console.log('El archivo no existe.')
             return []
         }
     }

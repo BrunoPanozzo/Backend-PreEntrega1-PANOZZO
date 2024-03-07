@@ -154,8 +154,6 @@ class CartManager {
             id: this.#getNuevoID(),
             products
         }
-
-        console.log (cart)
         
         this.#carts.push(cart)
 

@@ -168,6 +168,8 @@ router.delete('/:pid', async (req, res) => {
     res.status(200).json(`El producto con código '${prodId}' se eliminó exitosamente.`)
 })
 
+//init methods
+
 const main = async () => {
     await productManager.inicializar()
 }

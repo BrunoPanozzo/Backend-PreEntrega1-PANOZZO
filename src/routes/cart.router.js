@@ -12,11 +12,9 @@ const productsManager = new ProductManager(fileNameProducts)
 //middlewares
 
 async function validateNewCart(req, res, next) {
-    const { products } = req.body
-    
-    console.log(products)
+    const { products } = req.body    
 
-    const allProducts = await productsManager.getProducts()
+    let allProducts = await productsManager.getProducts()
 
     //valido que cada producto que quiero agregar a un carrito exista y que su quantity sea un valor positivo
     products.forEach(producto => {
@@ -27,7 +25,7 @@ async function validateNewCart(req, res, next) {
         }
         //valido además que su campo quantity sea un valor positivo
         if (!productsManager.esPositivo(producto.quantity)) {
-            res.status(400).json({ error: `El valor de quantity del producto con ID '${producto.pid}' es inválido.`})
+            res.status(400).json({ error: `El valor de quantity del producto con ID '${producto.id}' es inválido.`})
             return
         }
     })
@@ -52,7 +50,7 @@ async function validateProduct(req, res, next) {
     let prodId = +req.params.pid;
 
     const allProducts = await productsManager.getProducts()
-    const index = allProducts.findIndex(e => e.id === prodId)
+    const index = allProducts.findIndex(element => element.id === prodId)
     if (index === -1) {
         res.status(400).json({ error: `No existe el producto con ID '${prodId}'.`})
         return
@@ -103,6 +101,8 @@ router.post('/:cid/product/:pid', validateCart, validateProduct, async (req, res
     // HTTP 200 OK => carrito modificado exitosamente
     res.status(200).json(`Se agregaron ${quantity} producto/s con ID ${prodId} al carrito con ID ${cartId}.`)
 })
+
+//init methods
 
 const main = async () => {
     await cartsManager.inicializar()
