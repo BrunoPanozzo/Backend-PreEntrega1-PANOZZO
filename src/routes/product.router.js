@@ -36,7 +36,6 @@ async function validateNewProduct(req, res, next) {
     res.status(400).json({ error: "El producto que se quiere agregar posee algún campo inválido." })
 }
 
-
 async function validateUpdateProduct(req, res, next) {
     const prodId = +req.params.pid
     const product = req.body

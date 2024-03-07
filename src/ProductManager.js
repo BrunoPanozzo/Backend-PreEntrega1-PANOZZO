@@ -153,16 +153,7 @@ class ProductManager {
     }
 
     //agregar, si sus campos de datos son válidos, un producto al arreglo de productos inicial y al archivo correspondiente
-    addProduct = async (title, description, price, thumbnail, code, stock, status, category) => {
-        // if (this.validFields(title, description, price, thumbnail, code, stock)) {
-        //     //antes de agregar el producto, verificar que el campo "code" no se repita
-        //     const producto = this.#products.find(item => item.code === code)
-        //     if (producto) {
-        //         console.error(`No se permite agregar el producto con código \"${code}\" porque ya existe`)
-        //         return
-        //     }
-
-        //si llego a este punto, ya están validados los datos, puedo construir el objeto "producto"
+    addProduct = async (title, description, price, thumbnail, code, stock, status, category) => {        
         const product = {
             id: this.#getNuevoID(),
             title,
@@ -182,20 +173,6 @@ class ProductManager {
 
     //actualizar, si sus campos modificados son válidos, un producto en el arreglo de productos inicial y en el archivo correspondiente
     updateProduct = async (product, prodId) => {
-        // if (this.validFields(product.title, product.description, product.price, product.thumbnail, product.code, product.stock)) {
-        //     //antes de actualizar el producto, verificar que el campo "code" que puede venir modificado no sea igual a otros productos ya existentes
-        //     const producto = this.#products.find(item => ((item.code === product.code) && (item.id != product.id)))
-        //     if (producto) {
-        //         console.error(`No se permite modificar el producto con código \"${product.code}\" porque ya existe`)
-        //         return
-        //     }
-
-        //     const existingProductIdx = this.#products.findIndex(item => item.id === product.id)
-
-        //     if (existingProductIdx < 0) {
-        //         throw 'Producto Inválido!'
-        //     }
-
         const existingProductIdx = this.#products.findIndex(item => item.id === prodId)
        
         // actualizar los datos de ese producto en el array
