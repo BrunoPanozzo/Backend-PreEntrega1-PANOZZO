@@ -147,7 +147,18 @@ class ProductManager {
         if (producto)
             return producto
         else {
-            console.error(`El producto con código "${prodId}" no existe.`)
+            console.error(`El producto con id "${prodId}" no existe.`)
+            return
+        }
+    }
+
+    //buscar en el arreglo de productos un producto con un CODE determinado. Caso contrario devolver msje de error
+    getProductByCode = (prodCode) => {
+        const producto = this.#products.find(item => item.code === prodCode)
+        if (producto)
+            return producto
+        else {
+            console.error(`El producto con código "${prodCode}" no existe.`)
             return
         }
     }

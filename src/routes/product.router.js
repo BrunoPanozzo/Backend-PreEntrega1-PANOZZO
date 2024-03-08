@@ -20,9 +20,8 @@ async function validateNewProduct(req, res, next) {
                                        product.status,
                                        product.category)) {
         //debo verificar también que el campo "code" no se repita
-        let allProducts = await productManager.getProducts()
-        const producto = allProducts.find(element => element.code === product.code)
-        if (producto) {
+        const prod = productManager.getProductByCode(product.code)    
+        if (prod) {
             let msjeError = `No se permite agregar el producto con código '${product.code}' porque ya existe.`
             console.error(msjeError)
             // HTTP 400 => code repetido
@@ -41,9 +40,8 @@ async function validateUpdateProduct(req, res, next) {
     const product = req.body
 
     //primero debo verificar que el producto exista en mi array de todos los productos
-    let allProducts = await productManager.getProducts()
-    const existingProductIdx = allProducts.findIndex(element => element.id === prodId)
-    if (existingProductIdx < 0) {
+    const prod = productManager.getProductById(prodId)    
+    if (!prod) {
         // HTTP 404 => no existe el producto
         res.status(404).json({ error: `El producto con ID '${prodId}' no se puede modificar porque no existe.`})
         return

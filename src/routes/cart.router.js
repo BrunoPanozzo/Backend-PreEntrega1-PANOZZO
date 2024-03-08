@@ -7,24 +7,22 @@ const router = Router()
 const fileNameCarts = `${__dirname}/../../carts.json`
 const cartsManager = new CartManager(fileNameCarts)
 const fileNameProducts = `${__dirname}/../../products.json`
-const productsManager = new ProductManager(fileNameProducts)
+const productManager = new ProductManager(fileNameProducts)
 
 //middlewares
 
 async function validateNewCart(req, res, next) {
     const { products } = req.body    
 
-    let allProducts = await productsManager.getProducts()
-
     //valido que cada producto que quiero agregar a un carrito exista y que su quantity sea un valor positivo
     products.forEach(producto => {
-        const index = allProducts.findIndex(element => element.id === producto.id);
-        if (index === -1) {
+        const prod = productManager.getProductById(producto.id)
+        if (!prod) {
             res.status(400).json({ error: `No se puede crear el carrito porque no existe el producto con ID '${producto.id}'.`})
             return
         }
         //valido además que su campo quantity sea un valor positivo
-        if (!productsManager.esPositivo(producto.quantity)) {
+        if (!productManager.esPositivo(producto.quantity)) {
             res.status(400).json({ error: `El valor de quantity del producto con ID '${producto.id}' es inválido.`})
             return
         }
@@ -36,9 +34,8 @@ async function validateNewCart(req, res, next) {
 async function validateCart(req, res, next) {
     let cartId = +req.params.cid;
 
-    const allCarts = await cartsManager.getCarts()
-    const index = allCarts.findIndex(element => element.id === cartId)
-    if (index === -1) {
+    const cart = cartsManager.getCartById(cartId)
+    if (!cart) {
         res.status(400).json({ error: `No existe el carrito con ID '${cartId}'.`})
         return
     }
@@ -49,9 +46,8 @@ async function validateCart(req, res, next) {
 async function validateProduct(req, res, next) {
     let prodId = +req.params.pid;
 
-    const allProducts = await productsManager.getProducts()
-    const index = allProducts.findIndex(element => element.id === prodId)
-    if (index === -1) {
+    const prod = productManager.getProductById(prodId)
+    if (!prod) {
         res.status(400).json({ error: `No existe el producto con ID '${prodId}'.`})
         return
     }
