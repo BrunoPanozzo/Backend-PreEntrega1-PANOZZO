@@ -34,7 +34,7 @@ async function validateNewCart(req, res, next) {
 async function validateCart(req, res, next) {
     let cartId = +req.params.cid;
 
-    const cart = cartsManager.getCartById(cartId)
+    const cart = cartsManager.getCartById(cartId)    
     if (!cart) {
         res.status(400).json({ error: `No existe el carrito con ID '${cartId}'.`})
         return
@@ -46,7 +46,7 @@ async function validateCart(req, res, next) {
 async function validateProduct(req, res, next) {
     let prodId = +req.params.pid;
 
-    const prod = productManager.getProductById(prodId)
+    const prod = productManager.getProductById(prodId)  
     if (!prod) {
         res.status(400).json({ error: `No existe el producto con ID '${prodId}'.`})
         return
@@ -101,6 +101,7 @@ router.post('/:cid/product/:pid', validateCart, validateProduct, async (req, res
 //init methods
 
 const main = async () => {
+    await productManager.inicializar()
     await cartsManager.inicializar()
 }
 

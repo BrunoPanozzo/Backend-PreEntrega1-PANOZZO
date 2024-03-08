@@ -240,5 +240,26 @@
 				"quantity": 2
 			}
 		]
+	},
+	{
+		"id": 15,
+		"products": [
+			{
+				"id": 1,
+				"quantity": 1
+			},
+			{
+				"id": 1,
+				"quantity": 1
+			},
+			{
+				"id": 12,
+				"quantity": 6
+			},
+			{
+				"id": 13,
+				"quantity": 1
+			}
+		]
 	}
 ]

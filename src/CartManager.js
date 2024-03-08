@@ -17,7 +17,7 @@ class CartManager {
     }
 
     //métodos internos
-    
+
     #getHigherID = () => {
         let higherID = 0
         this.#carts.forEach(item => {

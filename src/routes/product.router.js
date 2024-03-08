@@ -56,6 +56,7 @@ async function validateUpdateProduct(req, res, next) {
                                        product.status,
                                        product.category)) {
         //verifico que el campo "code", que puede venir modificado, no sea igual al campo code de otros productos ya existentes
+        let allProducts = await productManager.getProducts()
         let producto = allProducts.find(element => ((element.code === product.code) && (element.id != prodId)))
         if (producto) {
             let msjeError = `No se permite modificar el producto con código '${product.code}' porque ya existe.`
